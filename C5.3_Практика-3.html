@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .btn {
+            padding: 0;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: none;
+            cursor: pointer;
+            margin: 5px 10px;
+            padding: 10px 15px;
+            border-radius: 1px;
+            font-size: 12px;
+            line-height: 15px;
+            text-transform: uppercase;
+            color: white;
+            background: #315efb;
+            transition: 0.3s;
+        }
+        
+        .btn:hover {
+            box-shadow: 0px 2px 8px 2px rgba(141, 150, 178, .3);
+            transform: scale(1.05);
+        }
+    </style>
+    <title>C5.3_3</title>
+</head>
+
+<body>
+
+    <fieldset>
+        <legend>Колличество картнок</legend>
+        <p> <label>Введите число</label> <br />
+            <input id="num1" class="text" size="20"> </p>
+        <p> <button class="btn j-btn-request">Запрашиваемые данные</button> </p>
+    </fieldset>
+    <div class="result j-result">Здесь будет результат запроса</div>
+    <div id="result1"></div>
+    <!-- <img id="result" /> -->
+
+</body>
+
+<script>
+    function useRequest(url, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+
+        xhr.onload = function() {
+            if (xhr.status != 200) {
+                console.log('Статус ответа: ', xhr.status);
+            } else {
+                const result = JSON.parse(xhr.response);
+                if (callback) {
+                    callback(result);
+                }
+            }
+        };
+
+        xhr.onerror = function() {
+            console.log('Ошибка! Статус ответа: ', xhr.status);
+        };
+
+        xhr.send();
+    };
+
+    // Ищем ноду для вставки результата запроса
+    const resultNode = document.querySelector('.j-result');
+    // Ищем кнопку, по нажатии на которую будет запрос
+    const btnNode = document.querySelector('.j-btn-request');
+
+    //** Функция обработки полученного результата
+    // * apiData - объект с результатом запроса
+
+    function displayResult(apiData) {
+        let cards = '';
+        // console.log(apiData);
+
+        apiData.forEach(item => {
+            const cardBlock = `
+          <div class="card">
+            <img
+              src="${item.download_url}"
+              class="card-image"
+              width="500" height="300"
+            />
+            <p>${item.author}</p>
+          </div>
+        `;
+            cards = cards + cardBlock;
+        });
+        resultNode.innerHTML = cards;
+    }
+
+    // Вешаем обработчик на кнопку для запроса
+    btnNode.addEventListener('click', () => {
+        const value1 = document.getElementById('num1').value;
+        const value = document.querySelector('input').value;
+
+        let s = document.getElementById('result1');
+        s.textContent = '';
+        if (!(value1 >= 1 && value1 <= 10)) {
+            s.textContent = 'число вне диапазона от 1 до 10';
+            return;
+
+        }
+        useRequest(`https://picsum.photos/v2/list/?limit=${value}`, displayResult);
+
+    });
+</script>
+
+</html>
