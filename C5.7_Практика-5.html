@@ -55,51 +55,51 @@
 
 </body>
 
+
 <script>
     // Ищем кнопку, по нажатии на которую будет запрос
     const btn = document.querySelector('.j-btn-request');
+    // Проверяем наличие сохраненных данных и выводим их на экран
+    const myJSON = JSON.parse(localStorage.getItem('myJSON'));
+    if (myJSON) {
+        resultDisplay(myJSON)
+    };
+    // Функция вывода результата на экран
+    function resultDisplay(data) {
+        document.getElementById("placehere").innerHTML = ''
+        for (let i = 0; i < data.length; i++) {
+            let elem = document.createElement("img");
+            elem.setAttribute("src", data[i].download_url);
+            document.getElementById("placehere").appendChild(elem);
+        }
+    };
     // Вешаем обработчик на кнопку для запроса
     btn.addEventListener('click', () => {
-        //const value1 = document.getElementById('page').value;
-        //const value2 = document.getElementById('limit').value;
         const page = parseInt(document.getElementById('page').value, 10);
         const limit = parseInt(document.getElementById('limit').value, 10);
-        let s = document.getElementById('j-result');
+        let s = document.getElementById("result");
         s.textContent = 'вне диапазона';
-        let diapazon = true;
-        if ((Object.is(page, NaN) === true) ||
-            (page < 1 || page > 10)
-        ) {
-            diapazon = false;
+        let diapazone = true;
+        if ((Object.is(page, NaN) === true) || page < 1 || page > 10) {
+            diapazone = false;
             s.textContent = "page (Страница) " + s.textContent;
         }
-        if ((Object.is(limit, NaN) === true) ||
-            (limit < 1 || limit > 10)
-        ) {
-            diapazon = false;
+        if ((Object.is(limit, NaN) === true) || limit < 1 || limit > 10) {
+            diapazone = false;
             s.textContent = "limit (Лимит) " + s.textContent;
         }
-        if (diapazon) {
+        if (diapazone) {
             s.textContent = 'page and limit ok';
-        }
-        fetch(`https://picsum.photos/v2/list?page=${page}&limit=${limit}`)
-            .then((response) => {
-                response.json().then(function(data) {
-                    //console.log(data);
-                    for (let i = 0; i < data.length; i++) {
-                        // console.log(data[i].download_url);
-                        let elem = document.createElement("img");
-                        elem.setAttribute("src", data[i].download_url);
-                        document.getElementById("placehere").appendChild(elem);
-                        console.log(elem)
-                    }
-
+            fetch(`https://picsum.photos/v2/list?page=${page}&limit=${limit}`)
+                .then((response) => {
+                    response.json().then((data) => {
+                        // записываем данные
+                        localStorage.setItem('myJSON', JSON.stringify(data));
+                        resultDisplay(data)
+                    });
                 });
-
-            });
-
+        }
     });
 </script>
-
 
 </html>
